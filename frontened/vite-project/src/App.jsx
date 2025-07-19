@@ -6,15 +6,16 @@ import Landing from "../src/pages/Landing"
 import Signup from './pages/Auth/Signup';
 import Dashboard from '../src/pages/Home/Dashboard';
 import ResumeEdit from '../src/pages/ResumeUpdate/ResumeEdit'
+import UserProvider from './context/UserContex';
 
 const App = () => {
   return (
-    <>
+    <UserProvider>
     <div >
       <Router>
         <Routes>
             <Route path='/' element={<Landing />} />
-            <Route path='/login' element={<Login />} />
+            <Route path='/login' element={<Login setcurrentPage={() => {}} />} />
             <Route path='/signup' element={<Signup />} />
             <Route path='/dashboard' element={<Dashboard />} />
             <Route path='/resume/:resumeId' element={<ResumeEdit />} />
@@ -29,7 +30,7 @@ const App = () => {
             },
         }}
     />
-    </>
+    </UserProvider>
   )
 }
 

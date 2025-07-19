@@ -1,25 +1,37 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import hero_bg from '../assets/hero_bg.png';
 import { useNavigate } from 'react-router-dom';
 import Login from '../pages/Auth/Login';
 import Signup from '../pages/Auth/Signup'
+import { UserContext } from '../context/UserContex';
+import ProfilInfoCard  from '../components/Cards/ProfilInfoCard';
 
 const Landing = () => {
   const navigate = useNavigate();
+  const {user} = useContext(UserContext);
   const [openAuthModel, setopenAuthModel] = useState(false);
   const [currentPage, setcurrentPage] = useState("login");
+
+   const handleCTA = () => {
+    if(!user){
+      setopenAuthModel(true);
+    }
+    else{
+      navigate('/dashboard');
+    }
+   }
 
   return (
     <div className='w-full min-h-screen bg-white'>
       <div className='container mx-auto px-4 py-6'>
         <header className='flex justify-between items-center mb-16'>
           <div className='text-xl font-bold'>CVibe</div>
-          <button
+         { user?  <ProfilInfoCard /> : <button
             className='bg-purple-100 text-sm font-semibold text-black px-7 py-2.5 rounded-lg hover:bg-gray-800 hover:text-white transition-colors cursor-pointer'
             onClick={() => setopenAuthModel(true)}
           >
             Login/SignUp
-          </button>
+          </button> }
         </header>
 
         <div className='flex flex-col md:flex-row items-center'>
@@ -35,7 +47,7 @@ const Landing = () => {
             </p>
             <button
               className='bg-black text-sm font-semibold text-white px-8 py-3 rounded-lg hover:bg-gray-800 transition-colors cursor-pointer'
-              onClick={() => navigate('/dashboard')}
+              onClick={handleCTA}
             >
               Get Started
             </button>

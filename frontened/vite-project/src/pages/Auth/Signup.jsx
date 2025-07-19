@@ -1,9 +1,13 @@
-import React, { useState } from 'react'
+import React, { useCallback, useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import Login from './Login';
 import Input from "../../components/Inputs/Input"
 import { validateEmail } from '../../components/utils/helper';
 import ProfilePhotoSelector from '../../components/Inputs/ProfilePhotoSelector'
+import { UserContext } from '../../context/UserContex';
+import {uploadImage} from '../../components/utils/uploadImage';
+import axiosInstance from '../../components/utils/axiosInstance';
+import { API_PATHS } from '../../components/utils/apiPaths';
 
 const Signup = ({setcurrentPage}) => {
   const [preview,setPreview] = useState(null);
@@ -12,10 +16,11 @@ const Signup = ({setcurrentPage}) => {
   const [email,setemail] = useState("");
   const [password,setpassword] = useState("");
   const [error,seterror] = useState("");
-  
-  const navigate = useNavigate();
-  //Handle signup form 
+  const {updateuser} = useContext(UserContext);
 
+  const navigate = useNavigate();
+
+  //Handle signup form 
 
   const handleSignup = async(e) => {
    e.preventDefault();
@@ -36,12 +41,37 @@ const Signup = ({setcurrentPage}) => {
      seterror("");
      // Signup API call 
 
-     try {
-      
-     } catch (error) {
-      
+    try {
+
+    // uploads image if present
+   if(profilepic){
+  const iamgeUploads = await uploadImage(profilepic);
+  profileImageUrl = iamgeUploads.imageUrl || "";  
+    }
+
+    const response = await axiosInstance.post(API_PATHS.AUTH.REGISTER, {
+      name : name,
+      email,
+      password,
+      profileImageUrl,
+    });
+     const {token} = response.data;
+
+     if(token){
+      localStorage.setItem("token",token);
+      updateuser(response.data);
+      navigate("/dashboard");
      }
+
+  } catch (error) {
+    if(error.response && error.response.data.message){
+        seterror(error.response.data.message);
+    }
+    else{
+        seterror("Something went wrong! try again");
+    }
   }
+  };
 
   return (
     <div className='w-[90vw] md:w-[33vw] flex justify-center flex-col'>
@@ -90,13 +120,11 @@ const Signup = ({setcurrentPage}) => {
     <button
       type="button"
       className="font-medium text-primary underline ml-1"
-      onClick={() => setcurrentPage("login")}
+      onClick={() => navigate('/login')}
     >
       Login
     </button>
   </p>
-
-
       </form>
     </div>
   )

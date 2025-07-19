@@ -1,8 +1,11 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import Signup from './Signup';
 import Input from "../../components/Inputs/Input"
 import { validateEmail } from '../../components/utils/helper';
+import { UserContext } from '../../context/UserContex';
+import axiosInstance from '../../components/utils/axiosInstance';
+import { API_PATHS } from '../../components/utils/apiPaths';
 
 const Login = ({setcurrentPage}) => {
   const [email,setemail] = useState("");
@@ -10,6 +13,7 @@ const Login = ({setcurrentPage}) => {
   const [error,seterror] = useState("");
 
   const navigate = useNavigate();
+  const {updateuser} = useContext(UserContext)
 
   //Handle Login Form submit
  const handleLogin = async(e) => {
@@ -22,15 +26,35 @@ const Login = ({setcurrentPage}) => {
       seterror('PLease enter valid password');
       return;
   }
-  seterror("")
+  seterror("");
+
+
   //Login API call
 
   try {
-    
+    const response = await axiosInstance.post(API_PATHS.AUTH.LOGIN, {
+      email,
+      password,
+    });
+     const {token} = response.data;
+
+     if(token){
+      localStorage.setItem("token",token);
+      updateuser(response.data);
+      navigate("/dashboard");
+     }
+
   } catch (error) {
-    
+    if(error.response && error.response.data.message){
+        seterror(error.response.data.message);
+    }
+    else{
+        seterror("Something went wrong! try again");
+    }
   }
  }
+
+
   return (
     <div className='w-[90vw] md:w-[33vw] flex justify-center flex-col'>
       <h2 className='text-xl font-semibold text-black'> Welcome back! </h2>
