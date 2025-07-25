@@ -20,7 +20,7 @@ const ResumeEdit = () => {
   const[openThemeSelector , setOpenThemeSelector] = useState(false);
   const[openPreviewModel, setOpenPreviewModel] = useState(false);
 
-  const[currentPage, setCurrentPage] = useState("profile-info");
+  const[currentPage, setCurrentPage] = useState("profileinfo");
   const[progres,setProgress] = useState(0);
   const[resumeData, setResumeData] = useState({
     title:"",
