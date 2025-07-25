@@ -1,40 +1,37 @@
-import React, { useState } from 'react'
-import {LuCheck , LuPencil} from 'react-icons/lu'
+import React, { useState } from 'react';
+import { LuCheck, LuPencil } from 'react-icons/lu';
 
+const TitleInput = ({ title, setTitle }) => {
+  const [showInput, setShowInput] = useState(false);
 
-const TitleInput = ({ title, setTitle}) => {
-    const [showInput,setShowInput] = useState(false);
   return (
     <div className='flex items-center gap-3'>
-      { showInput? (
+      {showInput ? (
         <>
-         <input 
-         type="text"
-         placeholder='Resume title'
-         className='text-sm md:text-[17px] bg-transparent outline-none text-black font-semibold border-b  border-gray-300 pb-10'
-         value={title}
-         onChange={({target}) => setTitle(target.value)}
-         />
-         <button className='cursor-pointer'>
-            <LuCheck
-            className='text-[16px] text-purple-500'
-            onClick={() => setShowInput((prevState) => !prevState)}
-            />
-         </button>
+          <input
+            type='text'
+            placeholder='Resume title'
+            className='text-sm md:text-[17px] bg-transparent outline-none text-black font-semibold border-b border-gray-300 pb-1'
+            value={title || ''}
+            onChange={({ target }) => setTitle(target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') setShowInput(false);
+            }}
+          />
+          <button className='cursor-pointer' onClick={() => setShowInput(false)}>
+            <LuCheck className='text-[16px] text-purple-500' />
+          </button>
         </>
       ) : (
-     <>
-     <h3 className='text-sm md:text-[17px] font-semibold'> {title} </h3>
-      <button className='cursor-pointer'>
-            <LuPencil
-            className='text-sm text-purple-600'
-            onClick={() => setShowInput((prevState) => !prevState)}
-            />
-         </button>
-     </>
+        <>
+          <h3 className='text-sm md:text-[17px] font-semibold'>{title}</h3>
+          <button className='cursor-pointer' onClick={() => setShowInput(true)}>
+            <LuPencil className='text-sm text-purple-600' />
+          </button>
+        </>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default TitleInput
+export default TitleInput;
