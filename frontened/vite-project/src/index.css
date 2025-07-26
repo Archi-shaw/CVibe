@@ -64,5 +64,5 @@
 }
 
 .btn-small-light {
-  @apply flex items-center gap-2 text-[12px] font-semibold text-purple-800 bg-purple-600/15 border border-purple-800;
+  @apply flex items-center gap-2 text-[12px] font-semibold text-purple-800 bg-purple-600/15 ;
 }
