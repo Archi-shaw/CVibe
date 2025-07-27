@@ -16,6 +16,7 @@ import CertificationForm from './Forms/CertificationForm';
 import ProjectForm from './Forms/ProjectForm';
 import EducationForm from './Forms/EducationForm';
 import AdditionalForm from './Forms/AdditionalForm';
+import RenderResume from '../../components/ResumeTemplates/RenderResume';
 
 const ResumeEdit = () => {
   const { resumeId } = useParams();
@@ -28,7 +29,7 @@ const ResumeEdit = () => {
   const [openThemeSelector, setOpenThemeSelector] = useState(false);
   const [openPreviewModel, setOpenPreviewModel] = useState(false);
 
-  const [currentPage, setCurrentPage] = useState("additionalForm");
+  const [currentPage, setCurrentPage] = useState("profileinfo");
   const [progress, setProgress] = useState(30);
   const [resumeData, setResumeData] = useState({
     title: "UI UX Designer Resume",
@@ -104,6 +105,88 @@ const ResumeEdit = () => {
 
   // ValidateAndNext
   const validateAndNext = (e) => { 
+    const error = [];
+    switch (currentPage) {
+      case "profileinfo": 
+      const {name, designation, summary} = resumeData?.profileinfo;
+      if(!name.trim()) error.push("Full Name is required");
+      if(!designation.trim()) error.push(" Desgination is required");
+      if(!summary.trim()) error.push("Description is required");
+      break;
+      case "contactinfo":
+      const { email , phone , linkedin} = resumeData?.contactinfo;
+      if(!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+        error.push("Valid Email is required");
+      }
+      if(!phone.trim()){
+        error.push("Phone Number is required");
+      }
+      if(!linkedin){
+        error.push("LinkedIn is required");
+      }
+      break;
+      case "workexperience": 
+      resumeData?.workexperience.forEach(({company,role,startDate, endDate}, index) => {
+       if(!company.trim() ){
+        error.push("Company is required");
+      }
+      if(!role.trim()){
+        error.push("Role is required");
+      }
+      if(!startDate || !endDate){
+        error.push("StartDate or EndDate is required");
+      }
+      })
+      break;
+      case "education":
+      resumeData?.education.forEach(({degree,instituition,startDate, endDate}, index) => {
+      if(!degree.trim() ){
+        error.push("Degree is required");
+      }
+      if(!instituition.trim()){
+        error.push("Institution name is required");
+      }
+      if(!startDate || !endDate){
+        error.push("StartDate or EndDate is required");
+      }
+      })
+      break;
+      case "skills":
+      resumeData?.skills.forEach(({name}, index) => {
+      if(!name.trim() ){
+        error.push("Skill name is required");
+      }})
+      break;
+      case "projects":
+      resumeData?.projects.forEach(({title, description, github, livedemo}, index) => {
+      if(!title.trim() ){
+        error.push("Project name  is required");
+      }
+      if(!description.trim()){
+        error.push("Project description  is required");
+      }
+       if(!github.trim() || !livedemo.trim()){
+        error.push("Github or Live demo link is required is required");
+      }
+    })
+      break;
+    case  "additionalForm":
+      if(resumeData.languages.length === 0 && !resumeData.languages[0].name.trim() ){
+        error.push("Minimum one language is required");
+      }
+      if(resumeData.interest.length === 0 && !resumeData.interest[0]?.trim() ){
+        error.push("Interest is required");
+      }
+      break;
+      default:
+      break;
+    }
+    if(error.length > 0){
+      setErrormsg(error.join(","));
+      return ;
+    }
+    setErrormsg("");
+    goToNextStep();
   };
 
   const handleDeleteResume = () => { 
@@ -112,12 +195,53 @@ const ResumeEdit = () => {
 
   // Function to navigate to next step
   const goToNextStep = (e) => { 
-    // Add navigation logic here
+    const pages = [
+      "profileinfo",
+      "contactinfo",
+      "workexperience",
+      "education",
+      "skills",
+      "projects",
+      "certifications",
+      "additionalForm",
+    ]
+
+    if(currentPage === "additionalForm" ) setOpenPreviewModel(true);
+    const currentIndex = pages.indexOf(currentPage);
+    if(currentIndex !== -1 && currentIndex < pages.length-1){
+      const nextIndex = currentIndex + 1;
+      setCurrentPage(pages[nextIndex]);
+
+    // Set Progess as percentge
+    const percent = Math.round((nextIndex / (pages.length-1)) * 100);
+    setProgress(percent);
+    window.scrollTo({ top:0 , behavior: "smooth"});
+    }
   };
 
   // Function to navigate to previous page
   const goBack = (e) => { 
-    // Add back navigation logic here
+     const pages = [
+      "profileinfo",
+      "contactinfo",
+      "workexperience",
+      "education",
+      "skills",
+      "projects",
+      "certifications",
+      "additionalForm",
+    ]
+
+    if(currentPage === "profileinfo" ) navigate("/dashboard");
+    const currentIndex = pages.indexOf(currentPage);
+    if(currentIndex > 0){
+    const prevIndex = currentIndex - 1;
+    setCurrentPage(pages[prevIndex]);
+
+    const percent = Math.round((prevIndex / (pages.length-1)) * 100);
+    setProgress(percent);
+    window.scrollTo({ top:0 , behavior: "smooth"});
+    }
   };
 
   const renderForm = () => { 
@@ -150,7 +274,7 @@ const ResumeEdit = () => {
                  }}
                  addnewItem={(newItem) => addnewItem("workexperience",newItem)}
                  removeItem={(index) => {
-                  removeItem("wokexperience",index)
+                  removeItem("workexperience",index)
                  }}
               />
             );
@@ -369,8 +493,8 @@ const ResumeEdit = () => {
           </div>
         </div>
 
-        <div className='grid md:grid-cols-2 grid-cols-1 gap-6'>
-          <div className='bg-white rounded-lg border border-purple-100 overflow-hidden flex flex-col'>
+         <div className='grid md:grid-cols-2 grid-cols-1 gap-6'> 
+          {/* <div className='bg-white rounded-lg border border-purple-100 overflow-hidden flex flex-col'>
             <StepProgress progress={progress} />
             
               {renderForm()}
@@ -410,15 +534,15 @@ const ResumeEdit = () => {
                     onClick={validateAndNext}
                     disabled={isLoading}
                   >
-                    {currentPage === "additionalInfo" ? "Preview & Download" : "Next"}
-                    {currentPage !== "additionalInfo" && (
+                    {currentPage === "additionalForm" ? "Preview & Download" : "Next"}
+                    {currentPage !== "additionalForm" && (
                       <LuArrowLeft className='text-[16px] rotate-180' />
                     )}
                   </button>
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Right Column - Resume Preview */}
           {/* <div className='bg-white rounded-lg border border-purple-100 p-6'>
@@ -426,14 +550,18 @@ const ResumeEdit = () => {
               <div ref={resumeRef} className='w-full h-full bg-gray-50 rounded-lg flex items-center justify-center'>
                 <p className='text-gray-500 text-lg'>Resume Preview</p>
               </div>
-            </div>
+            </div> */}
             
-            {/* Hidden download reference */}
-            {/* <div ref={resumeDownloadRef} className='hidden'> */}
-              {/* Download version of resume will be rendered here */}
-            {/* </div>
-          </div> */}
-        </div>
+            <div ref={resumeRef} className='h-[1000vh]'>
+            <RenderResume 
+            templateId={resumeData?.template?.theme || "01"}
+            resumeDataid={resumeData}
+            colorPaletes={resumeData?.template?.colorPaletes || []}
+            containerWidth={baseWidth}
+            />
+            </div>
+          </div>
+        {/* </div>  */}
       </div>
     </DashboardLayout>
   )
