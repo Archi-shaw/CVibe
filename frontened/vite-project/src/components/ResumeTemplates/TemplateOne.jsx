@@ -18,6 +18,8 @@ import EducationInfo from '../ResumeSelections/EducationInfo';
 import LanguageSection from '../ResumeSelections/LanguageInfo';
 import WorkExperience from '../ResumeSelections/WorkExperience';
 import Project from '../ResumeSelections/Project';
+import SkillSection from '../ResumeSelections/SkillSection';
+import CertificationInfo from '../ResumeSelections/CertificationInfo';
 
 const DEFAULT_THEME = ['#EBFDFF', '#A1F4FD' , '#CEFAFE', '#00B8DB' , '#4A5565'];
 
@@ -89,7 +91,7 @@ useEffect(() => {
           </p>
         </div>
         <div className='my-6 mx-6'>
-            <div className='flex flex-col gap-4'>
+            <div className='flex flex-col gap-3'>
 
             <ContactInfo 
             icon={<LuMapPinHouse />}
@@ -184,8 +186,48 @@ useEffect(() => {
     />
   ))}
 </div>
+<div className='mt-5'>
+  <Title text="Skills" color={themeColors[1]} />
+  <SkillSection
+    skills={resumeData.skills}
+    accentColor={themeColors[3]}
+    bgColor={themeColors[2]}
+  />
 </div>
-        </div>
+<div className="mt-4">
+  <Title text="Certifications" color={themeColors[1]} />
+
+  <div className="grid grid-cols-2 gap-2">
+    {resumeData.certifications.map((data, index) => (
+      <CertificationInfo
+        key={`cert_${index}`}
+        title={data.title}
+        issuer={data.issuer}
+        year={data.year}
+        bgColor={themeColors[2]}
+      />
+    ))}
+  </div>
+</div>
+ <div className="mt-4">
+      <Title text="Interests" color={themeColors[1]} />
+
+      <div className="flex items-center flex-wrap gap-3 mt-4">
+        {resumeData.interest.map((interest, index) => {
+          if (!interest) return null;
+          return (
+            <div
+              key={`interest_${index}`}
+              className="text-[10px] font-medium py-1 px-3 rounded-lg"
+              style={{ backgroundColor: themeColors[2] }}
+            >
+              {interest}
+            </div>
+          );
+        })}
+      </div>
+</div>
+        </div> </div>
     </div>
   )
 }

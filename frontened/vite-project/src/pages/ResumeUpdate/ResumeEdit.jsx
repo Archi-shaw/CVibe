@@ -494,7 +494,7 @@ const ResumeEdit = () => {
         </div>
 
          <div className='grid md:grid-cols-2 grid-cols-1 gap-6'> 
-          {/* <div className='bg-white rounded-lg border border-purple-100 overflow-hidden flex flex-col'>
+          <div className='bg-white rounded-lg border border-purple-100 overflow-hidden flex flex-col'>
             <StepProgress progress={progress} />
             
               {renderForm()}
@@ -542,9 +542,9 @@ const ResumeEdit = () => {
                 </div>
               </div>
             </div>
-          </div> */}
+          </div>
 
-          {/* Right Column - Resume Preview */}
+          {/* Right Column - Resume Preview
           {/* <div className='bg-white rounded-lg border border-purple-100 p-6'>
             <div className='flex items-center justify-center h-full min-h-[600px]'>
               <div ref={resumeRef} className='w-full h-full bg-gray-50 rounded-lg flex items-center justify-center'>
@@ -552,7 +552,7 @@ const ResumeEdit = () => {
               </div>
             </div> */}
             
-            <div ref={resumeRef} className='h-[1000vh]'>
+            <div ref={resumeRef} className='h-[100vh]'>
             <RenderResume 
             templateId={resumeData?.template?.theme || "01"}
             resumeData={resumeData}
