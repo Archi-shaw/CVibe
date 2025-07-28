@@ -7,9 +7,17 @@ import {
     LuRss,
     LuGithub,
     LuUser,
+    LuLinkedin,
+    LuMail
 }
 from 'react-icons/lu'
+import ContactInfo from '../ResumeSelections/ContactInfo';
 import { RiLinkedinLine } from 'react-icons/ri'
+import { formatYearMonth } from '../utils/helper';
+import EducationInfo from '../ResumeSelections/EducationInfo';
+import LanguageSection from '../ResumeSelections/LanguageInfo';
+import WorkExperience from '../ResumeSelections/WorkExperience';
+import Project from '../ResumeSelections/Project';
 
 const DEFAULT_THEME = ['#EBFDFF', '#A1F4FD' , '#CEFAFE', '#00B8DB' , '#4A5565'];
 
@@ -25,6 +33,7 @@ const Title = ({ text, color }) => (
 
 
 const TemplateOne = ({ resumeData, colorPaletes,  containerWidth}) => {
+  console.log("Template ResumeData", resumeData);
 const themeColors = colorPaletes?.length > 0 ? colorPaletes: DEFAULT_THEME;
 const resumeRef = useRef(null);
 const [baseWidth, setBaseWidth] = useState(800); //Default width
@@ -72,20 +81,110 @@ useEffect(() => {
                 </div>
            )}
           </div>
-          <h2 className='text-xl font-bold mt-3'>
+          <h2 className='text-2xl font-bold mt-3'>
             {resumeData?.profileinfo?.name}
           </h2>
-          <p className='text-sm text-center'>
+          <p className='text-lg text-center'>
             {resumeData?.profileinfo?.designation}
           </p>
         </div>
         <div className='my-6 mx-6'>
+            <div className='flex flex-col gap-4'>
 
-        </div>
-          </div>
-          <div className='col-span-8 pt-10 mr-10 pb-5 '>
+            <ContactInfo 
+            icon={<LuMapPinHouse />}
+            iconBg={themeColors[2]}
+            value={resumeData.contactinfo.location}
+           />
+           <ContactInfo 
+            icon={<LuMail />}
+            iconBg={themeColors[2]}
+            value={resumeData.contactinfo.email}
+           />
+           <ContactInfo 
+            icon={<LuPhone />}
+            iconBg={themeColors[2]}
+            value={resumeData.contactinfo.phone}
+           />
 
+           {resumeData.contactinfo.linkedin && (
+            <ContactInfo 
+            icon={<LuLinkedin />}
+            iconBg={themeColors[2]}
+            value={resumeData.contactinfo.linkedin}
+           />
+           )}
+
+          {resumeData.contactinfo.github && (
+            <ContactInfo 
+            icon={<LuGithub />}
+            iconBg={themeColors[2]}
+            value={resumeData.contactinfo.github}
+           />
+           )}
+
+            <ContactInfo 
+            icon={<LuRss />}
+            iconBg={themeColors[2]}
+            value={resumeData.contactinfo.website}
+           />
+
+            </div>
+      
+          <div className='mt-5'>
+      <Title text="Education" color={themeColors[1]} />
+      {resumeData?.education?.map((data, index) => (
+         <EducationInfo
+       // key={index}
+         degree={data.degree || ""}
+       institution={data.institution || data.instituition}
+       duration={`${formatYearMonth(data.startDate)} - ${formatYearMonth(data.endDate)}`}
+       />
+      ))
+        }
           </div>
+<div className='mt-5'>
+  <Title text="Languages" color={themeColors[1]} />
+  <LanguageSection
+    languages={resumeData.languages || []}
+    accentColor={themeColors[1]}
+    bgColor={themeColors[1]}
+  />
+</div>
+           </div>
+          </div>
+  <div className="col-span-8 pt-10 mr-10 pb-5">
+  <Title text="Professional Summary" color={themeColors[1]} />
+  <p className="text-sm font-medium">
+    {resumeData.profileinfo.summary}
+  </p>
+<div className="mt-4">
+  <Title text="Work Experience" color={themeColors[1]} />
+  {resumeData.workexperience.map((data, index) => (
+    <WorkExperience
+      key={`work_${index}`}
+      company={data.company}
+      role={data.role}
+      duration={`${formatYearMonth(data.startDate)} - ${formatYearMonth(data.endDate)}`}
+      durationColor={themeColors[4]}
+      description={data.description}
+    />
+  ))}
+</div>
+
+<div className="mt-4">
+  <Title text="Projects" color={themeColors[1]} />
+  {resumeData.projects.map((data, index) => (
+    <Project
+      title={data.title}
+      description={data.description}
+      github={data.github}
+      livedemo={data.livedemo}
+      bgColor={themeColors[1]}
+    />
+  ))}
+</div>
+</div>
         </div>
     </div>
   )

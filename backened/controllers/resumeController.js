@@ -12,7 +12,7 @@ const createResume = async(req,res) => {
 
     //Default Template for Resume
     const defaultResumeData = {
-        profileInfo: {
+        profileinfo: {
         profileimg: null,
         profilePreviewUrl: "",
         name: "",

@@ -555,7 +555,7 @@ const ResumeEdit = () => {
             <div ref={resumeRef} className='h-[1000vh]'>
             <RenderResume 
             templateId={resumeData?.template?.theme || "01"}
-            resumeDataid={resumeData}
+            resumeData={resumeData}
             colorPaletes={resumeData?.template?.colorPaletes || []}
             containerWidth={baseWidth}
             />
