@@ -1,4 +1,7 @@
 import moment from 'moment'
+import html2canvas from 'html2canvas';
+
+
 export const validateEmail = (email) => {
 const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
@@ -66,4 +69,43 @@ export const getLightColorFromImage = (imageUrl) => {
 
 export function formatYearMonth(yearMonth){
     return yearMonth ? moment(yearMonth, "YYYY-MM").format("MMM YYYY"): "";
+}
+
+
+export const fixTailwindColors = (element) => {
+    const elements = element.querySelectorAll("*");
+
+    elements.forEach((e1) =>{
+        const style = window.getComputedStyle(e1);
+        ["color","backgroundColor","borderColor"].forEach((prop) => {
+            const value = style[prop];
+            if(value.includes("oklch")){
+                e1.style[prop] = "#000";
+            }
+        })
+    })
+};
+
+export async function captureElementsAsImage(element) {
+    if(!element) throw new Error("No elements provided");
+
+    const canvas = await html2canvas(element);
+    return canvas.toDataURL("image/png")
+}
+
+
+// Utility to convert base64 data URL to a File object
+export const dataURLtoFile = (dataUrl, fileName) => {
+  const arr = dataUrl.split(",");
+  const mime = arr[0].match(/:(.*?);/)[1];
+  const bstr = atob(arr[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+
+  return new File([u8arr], fileName, { type: mime });
+
 }

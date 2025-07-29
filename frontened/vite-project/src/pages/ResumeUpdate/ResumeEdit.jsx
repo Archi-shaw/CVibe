@@ -17,6 +17,9 @@ import ProjectForm from './Forms/ProjectForm';
 import EducationForm from './Forms/EducationForm';
 import AdditionalForm from './Forms/AdditionalForm';
 import RenderResume from '../../components/ResumeTemplates/RenderResume';
+import {  fixTailwindColors , captureElementsAsImage , dataURLtoFile} from '../../components/utils/helper'
+
+
 
 const ResumeEdit = () => {
   const { resumeId } = useParams();
@@ -28,7 +31,6 @@ const ResumeEdit = () => {
   const [baseWidth, setBaseWidth] = useState(800);
   const [openThemeSelector, setOpenThemeSelector] = useState(false);
   const [openPreviewModel, setOpenPreviewModel] = useState(false);
-
   const [currentPage, setCurrentPage] = useState("profileinfo");
   const [progress, setProgress] = useState(30);
   const [resumeData, setResumeData] = useState({
@@ -415,12 +417,67 @@ const ResumeEdit = () => {
 
   // upload resume thumbnail and profile image
   const uploadResumeImage = async () => { 
-    // Add image upload logic here
+     try {
+        setIsLoading(true);
+        fixTailwindColors(resumeRef.current);
+        const imageDataUrl = await captureElementsAsImage(resumeRef.current);
+
+        const thumbnailFile =dataURLtoFile(
+          imageDataUrl,
+        `resume-${resumeId}.png`
+        );
+
+        const profileImageFile = resumeData?.profileinfo?.profileImg || null;
+        const formData = new FormData();
+
+        if(profileImageFile) formData.append("profileImage", profileImageFile);
+        if(thumbnailFile) formData.append("thumbnail", thumbnailFile);
+
+        const uploadResponse = await axiosInstance.put(
+          API_PATHS.RESUME.UPLOAD_IMAGES(resumeId),
+          formData, {
+            headers : {"Content-Type" : "multipart/form-data"}
+          }
+        ) 
+        
+         const { thumbnailLinks , profilePreviewUrl} = uploadResponse.data ;
+         console.log("RESUME_DATA__", resumeData);
+
+         // Call the second API to update other data
+        await updateResumeDetails(thumbnailLinks, profilePreviewUrl);
+
+        toast.success("Resume Upload sucessfully");
+        navigate('/dashboard');
+     } catch (error) {
+        console.log("Error uploading Image", error);
+        toast.error("Failed to upload images");
+     }
+     finally{
+          setIsLoading(false);
+     }
   };
 
-  const uploadResumeDetails = async () => { 
-    // Add resume save logic here
-  };
+ const updateResumeDetails = async (thumbnailLinks, profilePreviewUrl) => {
+  try {
+    setIsLoading(true);
+
+    const response = await axiosInstance.put(
+      API_PATHS.RESUME.UPDATE(resumeId),
+      {
+        ...resumeData,
+        thumbnailLinks: thumbnailLinks || "",
+        profileinfo: {
+          ...resumeData.profileinfo,
+            profilePreviewUrl: profilePreviewUrl || "",
+        },
+      }
+    );
+  } catch (err) {
+    console.error("Error capturing image:", err);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   // Delete Resume
   const handleResume = () => { 
@@ -522,7 +579,7 @@ const ResumeEdit = () => {
                 <div className='flex items-center gap-3'>
                   <button
                     className='flex items-center gap-2 px-4 py-2  cursor-pointer text-sm bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50'
-                    onClick={uploadResumeDetails}
+                    onClick={uploadResumeImage}
                     disabled={isLoading}
                   >
                     <LuSave className='text-[16px]' />
@@ -543,16 +600,8 @@ const ResumeEdit = () => {
               </div>
             </div>
           </div>
-
-          {/* Right Column - Resume Preview
-          {/* <div className='bg-white rounded-lg border border-purple-100 p-6'>
-            <div className='flex items-center justify-center h-full min-h-[600px]'>
-              <div ref={resumeRef} className='w-full h-full bg-gray-50 rounded-lg flex items-center justify-center'>
-                <p className='text-gray-500 text-lg'>Resume Preview</p>
-              </div>
-            </div> */}
             
-            <div ref={resumeRef} className='h-[100vh]'>
+            <div ref={resumeRef} className='h-[75vh]'>
             <RenderResume 
             templateId={resumeData?.template?.theme || "01"}
             resumeData={resumeData}
@@ -561,7 +610,7 @@ const ResumeEdit = () => {
             />
             </div>
           </div>
-        {/* </div>  */}
+
       </div>
     </DashboardLayout>
   )
