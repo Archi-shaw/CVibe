@@ -9,10 +9,18 @@ const {
  = require('../controllers/resumeController');
  const {protect} = require('../middlewares/authMiddleware');
 const { uploadResumeImages } = require('../controllers/uploadImages');
+const upload = require('../middlewares/uploadMiddleware');
 
- const router = express.Router();
 
- router.put('/:id/upload-images', protect, uploadResumeImages);
+const router = express.Router();
+
+
+router.post(
+  '/:id/upload-images',
+  protect,
+  upload.fields([{ name: "thumbnail" }, { name: "profileImage" }]), // <-- ADD THIS
+  uploadResumeImages
+);
 
 router.post('/', protect,createResume);
 router.get('/', protect,getUserResumes);

@@ -13,10 +13,10 @@ const ResumeSchema = new mongoose.Schema({
     thumbnailLinks: {
         type:String,
     },
-    template:{
-        type:String,
-        colorPaletes: [String],
-    },
+   template: {
+  theme: { type: String, default: "" },
+  colorPaletes: { type: [String], default: [] }
+},
     profileinfo:{
         profilePreviewUrl: String,
         name: String,

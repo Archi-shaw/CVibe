@@ -65,8 +65,7 @@ const Resume = require('../models/Resume');
 const uploadResumeImages = async (req, res) => {
   try {
     const resumeId = req.params.id;
-    const resume = await Resume.findOne({ _id: resumeId, user: req.user._id });
-
+     const resume = await Resume.findOne({ _id: resumeId, userId: req.user._id });
     if (!resume) {
       return res.status(404).json({ message: 'Resume not found or unauthorized access' });
     }
