@@ -20,6 +20,8 @@ import WorkExperience from '../ResumeSelections/WorkExperience';
 import Project from '../ResumeSelections/Project';
 import SkillSection from '../ResumeSelections/SkillSection';
 import CertificationInfo from '../ResumeSelections/CertificationInfo';
+import Modal from '../Modal';
+import ThemeSelector from '../../pages/ResumeUpdate/ThemeSelector';
 
 const DEFAULT_THEME = ['#EBFDFF', '#A1F4FD' , '#CEFAFE', '#00B8DB' , '#4A5565'];
 
@@ -35,7 +37,8 @@ const Title = ({ text, color }) => (
 
 
 const TemplateOne = ({ resumeData, colorPaletes,  containerWidth}) => {
-  console.log("Template ResumeData", resumeData);
+console.log("Template ResumeData", resumeData);
+const [openThemeSelector, setOpenThemeSelector] = useState(false);
 const themeColors = colorPaletes?.length > 0 ? colorPaletes: DEFAULT_THEME;
 const resumeRef = useRef(null);
 const [baseWidth, setBaseWidth] = useState(800); //Default width
@@ -227,6 +230,25 @@ useEffect(() => {
         })}
       </div>
 </div>
+<Modal
+  isOpen={openThemeSelector}
+  onClose={() => setOpenThemeSelector(false)}
+  title="Change Theme"
+>
+  <div className="w-[90vw] h-[80vh]">
+    <ThemeSelector
+      selectedTheme={resumeData?.template}
+      setSelectedTheme={(value) => {
+        setResumeData((prevState) => ({
+          ...prevState,
+          template: value || prevState.template,
+        }));
+      }}
+      resumeData={null}
+      onClose={() => setOpenThemeSelector(false)}
+    />
+  </div>
+</Modal>
         </div> </div>
     </div>
   )

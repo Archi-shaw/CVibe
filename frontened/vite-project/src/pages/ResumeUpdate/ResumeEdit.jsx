@@ -433,7 +433,7 @@ const ResumeEdit = () => {
         if(profileImageFile) formData.append("profileImage", profileImageFile);
         if(thumbnailFile) formData.append("thumbnail", thumbnailFile);
 
-        const uploadResponse = await axiosInstance.put(
+        const uploadResponse = await axiosInstance.post(
           API_PATHS.RESUME.UPLOAD_IMAGES(resumeId),
           formData, {
             headers : {"Content-Type" : "multipart/form-data"}
