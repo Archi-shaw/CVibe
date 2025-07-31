@@ -20,6 +20,7 @@ import RenderResume from '../../components/ResumeTemplates/RenderResume';
 import {  fixTailwindColors , captureElementsAsImage , dataURLtoFile} from '../../components/utils/helper'
 import Modal from '../../components/Modal';
 import ThemeSelector from '../../pages/ResumeUpdate/ThemeSelector';
+import ReactToPrint from "react-to-print";
 
 
 const ResumeEdit = () => {
@@ -191,9 +192,6 @@ const ResumeEdit = () => {
     goToNextStep();
   };
 
-  const handleDeleteResume = () => { 
-    // Add delete logic here
-  };
 
   // Function to navigate to next step
   const goToNextStep = (e) => { 
@@ -479,15 +477,30 @@ const ResumeEdit = () => {
   }
 };
 
-  // Delete Resume
-  const handleResume = () => { 
-    // Add resume handling logic here
-  };
+// Delete Resume
+// Delete Resume - Fixed version
+const handleDeleteResume = async () => {
+    try {
+        setIsLoading(true);
+        const response = await axiosInstance.delete(API_PATHS.RESUME.DELETE(resumeId));
+        toast.success('Resume Deleted Successfully')
+        navigate('/dashboard')
+    } catch (err) {
+        console.error("Error capturing image:", err);
+    } finally {
+        setIsLoading(false);
+    }
+};
 
   // download Resume
-  const reactToprint = useReactToPrint({
-    content: () => resumeDownloadRef.current,
-  });
+const reactToprint = useReactToPrint({
+  content: () => {
+    console.log("resumeDownloadRef.current:", resumeDownloadRef.current);
+    return resumeDownloadRef.current;
+  },
+  documentTitle: 'resume',
+});
+
 
   // Function to update basewidth based on resume container width
   const updateBaseWidth = () => { 
@@ -542,7 +555,7 @@ const ResumeEdit = () => {
             </button>
             <button
               className='flex items-center gap-2 px-3 py-2 text-sm cursor-pointer bg-blue-50 text-blue-700 rounded-lg border border-blue-200 hover:bg-blue-100 transition-colors'
-              onClick={() => reactToprint()}
+              onClick={() => setOpenPreviewModel(true)}
             >
               <LuDownload className='text-[16px]' />
               <span className='hidden md:block'>Preview & Download</span>
@@ -631,8 +644,29 @@ const ResumeEdit = () => {
           />
         </div>
       </Modal>
-    </DashboardLayout>
-  )
-}
+      <Modal
+  isOpen={openPreviewModel}
+  onClose={() => setOpenPreviewModel(false)}
+  title={resumeData.title}
+  showActionBtn
+  actionBtnText="Download"
+  actionBtnIcon={<LuDownload className="text-[16px]" />}
+  onActionClick={() => reactToprint()}
+  fullWidth={true}
+>
+  <div ref={resumeDownloadRef} className="w-[70vw] h-[80vh]">
+    <RenderResume
+      templateId={resumeData?.template?.theme || ""}
+      resumeData={resumeData}
+      colorPalette={resumeData?.template?.colorPaletes || []}
+    />
+  </div>
+</Modal>
 
+<DashboardLayout />
+
+    </DashboardLayout>
+  );
+
+};
 export default ResumeEdit

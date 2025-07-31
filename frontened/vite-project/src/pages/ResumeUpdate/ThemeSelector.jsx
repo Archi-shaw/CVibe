@@ -103,6 +103,7 @@ return <div className="container mx-auto px-2 md:px-0">
     </div>
   </div>
 
+  {/* Right side: Rendered resume */}
   <div className="col-span-12 md:col-span-7 bg-white -mr-3" ref={resumeRef}>
     <RenderResume
       templateId={selectedTemplate?.theme || ""}
