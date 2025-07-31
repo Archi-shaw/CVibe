@@ -18,7 +18,8 @@ import EducationForm from './Forms/EducationForm';
 import AdditionalForm from './Forms/AdditionalForm';
 import RenderResume from '../../components/ResumeTemplates/RenderResume';
 import {  fixTailwindColors , captureElementsAsImage , dataURLtoFile} from '../../components/utils/helper'
-
+import Modal from '../../components/Modal';
+import ThemeSelector from '../../pages/ResumeUpdate/ThemeSelector';
 
 
 const ResumeEdit = () => {
@@ -99,7 +100,6 @@ const ResumeEdit = () => {
         progress: 0,
       },
     ],
-    interest: [""],
   });
 
   const [errormsg, setErrormsg] = useState("");
@@ -610,8 +610,27 @@ const ResumeEdit = () => {
             />
             </div>
           </div>
-
       </div>
+     < Modal
+        isOpen={openThemeSelector}
+        onClose={() => setOpenThemeSelector(false)}
+        title="Change Theme"
+        fullWidth={true}
+      >
+        <div className="w-[90vw] h-[80vh]">
+          <ThemeSelector
+            selectedTheme={resumeData?.template}
+            setSelectedTheme={(value) => {
+              setResumeData((prevState) => ({
+                ...prevState,
+                template: value || prevState.template,
+              }));
+            }}
+  resumeData={resumeData}
+      onClose={() => setOpenThemeSelector(false)}
+          />
+        </div>
+      </Modal>
     </DashboardLayout>
   )
 }

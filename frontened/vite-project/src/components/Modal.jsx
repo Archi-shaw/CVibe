@@ -77,6 +77,7 @@ const Modal = ({
   onClose,
   title,
   hideHeader,
+  fullWidth = false, 
   showActionBtn,
   actionBtnText,
   actionBtnIcon,
@@ -86,7 +87,13 @@ const Modal = ({
 
   return (
     <div className="fixed inset-0 z-50 flex justify-center items-center bg-transparent bg-opacity-30 backdrop-blur-sm p-2 sm:p-4">
-      <div className="relative flex flex-col bg-white shadow-lg rounded-lg overflow-hidden w-full max-w-md max-h-[90vh] sm:max-w-lg md:max-w-xl">
+      <div
+        className={`relative flex flex-col bg-white shadow-lg rounded-lg overflow-hidden ${
+          fullWidth
+            ? "w-[96vw] h-[96vh] max-w-[96vw] max-h-[96vh]"
+            : "w-[90%] max-w-lg max-h-[90vh]"
+        }`}
+      >
         <button
           type="button"
           onClick={onClose}
