@@ -39,5 +39,5 @@ app.use('/api/resume', resumeRoutes);
 
 
 // Start server
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT ;
 app.listen(PORT, () => console.log(`Server is running at port ${PORT}`));
