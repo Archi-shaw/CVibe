@@ -1,6 +1,4 @@
-// export const BASE_URL = 'http://localhost:8000';
-export const BASE_URL = 'https://cvibe-backend.onrender.com';
-
+export const BASE_URL = 'https://cvibe-backened.onrender.com';
 
 //utils/api/path
 export const API_PATHS ={

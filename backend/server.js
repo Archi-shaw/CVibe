@@ -11,17 +11,19 @@ const app = express();
 // Connect to MongoDB
 connectDb();
 
+app.use(express.json());
+
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:5173', 'https://cvibe-frontend.vercel.app'],
+  origin: ['http://localhost:5173', 'https://cvibe.onrender.com'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
 }));
-
 
 // Serve static uploads folder with CORS header
 app.use("/uploads", express.static(path.join(__dirname, "uploads"), {
   setHeaders: (res, path) => {
-    res.set("Access-Control-Allow-Origin", "http://localhost:5173");
+    res.set("Access-Control-Allow-Origin", "*");
   },
 }));
 

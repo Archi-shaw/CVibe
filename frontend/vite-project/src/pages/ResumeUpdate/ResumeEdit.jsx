@@ -103,6 +103,8 @@ const ResumeEdit = () => {
 
   const [errormsg, setErrormsg] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+    console.log("Resume ID:", resumeId);
+
 
   // Fixed useReactToPrint configuration - Initialize only when needed
   const handleDownloadResume = useReactToPrint({
