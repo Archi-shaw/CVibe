@@ -15,7 +15,7 @@ app.use(express.json());
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:5173', 'https://cvibe.onrender.com'],
+  origin: ['https://cvibe.onrender.com'],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
 }));
