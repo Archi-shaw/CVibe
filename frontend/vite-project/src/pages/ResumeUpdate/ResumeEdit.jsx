@@ -8,10 +8,10 @@ import { useReactToPrint } from 'react-to-print';
 import axiosInstance from '../../components/utils/axiosInstance';
 import { API_PATHS } from '../../components/utils/apiPaths';
 import StepProgress from '../../components/StepProgress';
-import ProfileInfoForm from '../../pages/ResumeUpdate/Forms/ProfileInfoForm';
+import ProfileInfoForm from './Forms/ProfileInfoForm';
 import ContactInfoForm from './Forms/ContactInfoForm';
-import WorkExperienceForm from '../../pages/ResumeUpdate/Forms/WorkExperienceForm';
-import SkillForm from '../../pages/ResumeUpdate/Forms/SkillForm';
+import WorkExperienceForm from './Forms/WorkExperienceForm';
+import SkillForm from './Forms/SkillForm';
 import CertificationForm from './Forms/CertificationForm';
 import ProjectForm from './Forms/ProjectForm';
 import EducationForm from './Forms/EducationForm';
@@ -19,9 +19,7 @@ import AdditionalForm from './Forms/AdditionalForm';
 import RenderResume from '../../components/ResumeTemplates/RenderResume';
 import {  fixTailwindColors , captureElementsAsImage , dataURLtoFile} from '../../components/utils/helper'
 import Modal from '../../components/Modal';
-import ThemeSelector from '../../pages/ResumeUpdate/ThemeSelector';
-import ReactToPrint from "react-to-print";
-
+import ThemeSelector from './ThemeSelector';
 
 const ResumeEdit = () => {
   const { resumeId } = useParams();
@@ -105,6 +103,41 @@ const ResumeEdit = () => {
 
   const [errormsg, setErrormsg] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  // Fixed useReactToPrint configuration - Initialize only when needed
+  const handleDownloadResume = useReactToPrint({
+    contentRef: resumeDownloadRef, // Use contentRef instead of content
+    documentTitle: `${resumeData.title || 'resume'}`,
+    onBeforeGetContent: () => {
+      return new Promise((resolve) => {
+        // Ensure component is fully rendered
+        setTimeout(resolve, 1000);
+      });
+    },
+    onAfterPrint: () => {
+      console.log('Resume downloaded successfully');
+      toast.success('Resume downloaded successfully');
+    },
+    onPrintError: (errorLocation, error) => {
+      console.error('Print error:', errorLocation, error);
+      toast.error('Failed to download resume. Please try again.');
+    }
+  });
+
+  // Alternative download function with better error handling
+  const handleDownloadWithValidation = () => {
+    if (!resumeDownloadRef.current) {
+      toast.error('Resume content not ready. Please wait a moment and try again.');
+      return;
+    }
+
+    try {
+      handleDownloadResume();
+    } catch (error) {
+      console.error('Download error:', error);
+      toast.error('Failed to download resume. Please try again.');
+    }
+  };
 
   // ValidateAndNext
   const validateAndNext = (e) => { 
@@ -191,7 +224,6 @@ const ResumeEdit = () => {
     setErrormsg("");
     goToNextStep();
   };
-
 
   // Function to navigate to next step
   const goToNextStep = (e) => { 
@@ -349,7 +381,6 @@ const ResumeEdit = () => {
       }
   };
 
-
   // Update simple nested object (like profileinfo, contactinfo, etc.)
   const updateSection = (section, key, value) => { 
     setResumeData(prevState => ({
@@ -478,7 +509,6 @@ const ResumeEdit = () => {
 };
 
 // Delete Resume
-// Delete Resume - Fixed version
 const handleDeleteResume = async () => {
     try {
         setIsLoading(true);
@@ -491,16 +521,6 @@ const handleDeleteResume = async () => {
         setIsLoading(false);
     }
 };
-
-  // download Resume
-const reactToprint = useReactToPrint({
-  content: () => {
-    console.log("resumeDownloadRef.current:", resumeDownloadRef.current);
-    return resumeDownloadRef.current;
-  },
-  documentTitle: 'resume',
-});
-
 
   // Function to update basewidth based on resume container width
   const updateBaseWidth = () => { 
@@ -624,7 +644,8 @@ const reactToprint = useReactToPrint({
             </div>
           </div>
       </div>
-     < Modal
+     
+      <Modal
         isOpen={openThemeSelector}
         onClose={() => setOpenThemeSelector(false)}
         title="Change Theme"
@@ -639,34 +660,34 @@ const reactToprint = useReactToPrint({
                 template: value || prevState.template,
               }));
             }}
-  resumeData={resumeData}
-      onClose={() => setOpenThemeSelector(false)}
+            resumeData={resumeData}
+            onClose={() => setOpenThemeSelector(false)}
           />
         </div>
       </Modal>
+      
       <Modal
-  isOpen={openPreviewModel}
-  onClose={() => setOpenPreviewModel(false)}
-  title={resumeData.title}
-  showActionBtn
-  actionBtnText="Download"
-  actionBtnIcon={<LuDownload className="text-[16px]" />}
-  onActionClick={() => reactToprint()}
-  fullWidth={true}
->
-  <div ref={resumeDownloadRef} className="w-[70vw] h-[80vh]">
-    <RenderResume
-      templateId={resumeData?.template?.theme || ""}
-      resumeData={resumeData}
-      colorPalette={resumeData?.template?.colorPaletes || []}
-    />
-  </div>
-</Modal>
-
-<DashboardLayout />
-
+        isOpen={openPreviewModel}
+        onClose={() => setOpenPreviewModel(false)}
+        title={resumeData.title}
+        showActionBtn
+        actionBtnText="Download PDF"
+        actionBtnIcon={<LuDownload className="text-[16px]" />}
+        onActionClick={handleDownloadWithValidation}
+        fullWidth={true}
+      >
+        <div className="w-[70vw] h-[80vh] flex justify-center">
+          <div ref={resumeDownloadRef} className="w-full max-w-4xl">
+            <RenderResume
+              templateId={resumeData?.template?.theme || "01"}
+              resumeData={resumeData}
+              colorPaletes={resumeData?.template?.colorPaletes || []}
+            />
+          </div>
+        </div>
+      </Modal>
     </DashboardLayout>
   );
-
 };
-export default ResumeEdit
+
+export default ResumeEdit;
