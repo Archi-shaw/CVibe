@@ -13,10 +13,10 @@ connectDb();
 
 // Middleware
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: ['http://localhost:5173', 'https://cvibe-frontend.vercel.app'],
   credentials: true,
 }));
-app.use(express.json());
+
 
 // Serve static uploads folder with CORS header
 app.use("/uploads", express.static(path.join(__dirname, "uploads"), {
@@ -29,13 +29,6 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads"), {
 app.use('/api/auth', authRoutes);
 app.use('/api/resume', resumeRoutes);
 
-// const listEndpoints = require('express-list-endpoints');
-// console.log(
-//   '🗺️ resume endpoints:',
-//   listEndpoints(app)
-//     .filter(r => r.path.startsWith('/api/resume'))
-//     .map(r => `${r.methods.join(',')} ${r.path}`)
-// );
 
 
 // Start server
