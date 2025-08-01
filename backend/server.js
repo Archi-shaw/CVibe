@@ -14,8 +14,20 @@ connectDb();
 app.use(express.json());
 
 // Middleware
+const allowedOrigins = [
+  'https://cvibe.onrender.com',
+  'http://localhost:5173', // keep this for local dev
+];
+
 app.use(cors({
-  origin: ['https://cvibe.onrender.com'],
+  origin: function (origin, callback) {
+    // allow requests with no origin (like mobile apps or curl)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS: " + origin));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
 }));
